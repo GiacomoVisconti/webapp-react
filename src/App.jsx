@@ -1,8 +1,20 @@
+import HomePage from "../pages/HomePage";
+import DefaultLayout from "./layouts/DefaultLayout"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
 function App() {
   return (
-    <h1>Home</h1>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route Component={DefaultLayout}>
+
+            <Route path="/" element={<HomePage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 
