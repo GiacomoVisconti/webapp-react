@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from 'react'
+import FilmRate from "../components/FilmRate"
 
 export default function SingleMovie() {
     const { id } = useParams()
@@ -36,7 +37,17 @@ export default function SingleMovie() {
                                     <p className="card-text"><small className="text-body-secondary">Directed by: </small>{singleMovie?.director}</p>
                                 </div>
                             </div>
+                            <div className="text-center">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-warning"
+                                >
+                                    Review
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
                 <section className="container-fluid my-5">
@@ -44,20 +55,25 @@ export default function SingleMovie() {
                     <div className="row g-3" >
                         {console.log(singleMovie?.reviews)}
                         {singleMovie?.reviews.map((element, index) => {
+                            let updated = Date(element.updated_at)
                             return (
                                 <div key={index} className="card ">
 
                                     <div className="card-body">
                                         <div className="d-flex justify-content-between">
+                                            <div className="d-flex">Voto:
+                                                <span>
+                                                    <FilmRate element={element} />
+                                                </span>
+                                            </div>
                                             <div className="card-title d-flex">User: <h5 className="px-2">{element.name}</h5></div>
-                                            <p>Voto: <span>{element.vote}</span></p>
 
                                         </div>
                                         <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
 
                                     </div>
                                     <div className="card-footer text-body-secondary">
-                                        Updated at: {element.updated_at.toLocaleString('en-us', { weekday: "long", year: "numeric", month: "short", day: "numeric" })}
+                                        Updated at: {updated}
                                     </div>
                                 </div>
                             )
