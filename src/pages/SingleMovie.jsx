@@ -5,8 +5,15 @@ import FilmRate from "../components/FilmRate"
 export default function SingleMovie() {
     const { id } = useParams()
     const movie_api_url = `${import.meta.env.VITE_API_URL}/${id}`
+    const movie_reviews_url = `${movie_api_url}/reviews`
+
     const [singleMovie, setSingleMovie] = useState(null)
     const [isClicked, setIsClicked] = useState(false)
+    const [newReview, setNewReview] = useState({
+        name: '',
+        vote: 1,
+        text: ''
+    })
 
     useEffect(() => {
         fetch(movie_api_url)
@@ -18,7 +25,37 @@ export default function SingleMovie() {
             })
     }, [])
 
+    function handleSubmit(e) {
+        e.preventDefault()
+        console.log(newReview);
 
+        fetch(movie_reviews_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newReview)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+
+                if (data.error) return
+
+                setSingleMovie(prevState => ({
+                    ...prevState,
+                    reviews: [...prevState.reviews, data.review]
+                }))
+
+                setNewReview({
+                    name: '',
+                    vote: 1,
+                    text: ''
+                })
+            })
+
+
+    }
 
     return (
         <>
@@ -58,7 +95,7 @@ export default function SingleMovie() {
                     <div className={isClicked ? "d-block" : "d-none"}>
                         <div className="my-4 card p-3">
                             <h3>Add your Review</h3>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-6">
                                         <div className="mb-3">
@@ -70,6 +107,8 @@ export default function SingleMovie() {
                                                 id=""
                                                 aria-describedby="helpId"
                                                 placeholder=""
+                                                value={newReview.username}
+                                                onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
                                             />
 
                                         </div>
@@ -80,10 +119,15 @@ export default function SingleMovie() {
                                             <input
                                                 type="number"
                                                 className="form-control"
+                                                min='1'
+                                                max='5'
+                                                step='1'
                                                 name=""
                                                 id=""
                                                 aria-describedby="helpId"
                                                 placeholder=""
+                                                value={newReview.vote}
+                                                onChange={(e) => setNewReview({ ...newReview, vote: e.target.value })}
                                             />
 
                                         </div>
@@ -91,7 +135,7 @@ export default function SingleMovie() {
                                     <div className="col-12">
                                         <div className="mb-3">
                                             <label htmlFor="exampleFormControlTextarea1" className="form-label">Review Text</label>
-                                            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" value={newReview.text} onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}></textarea>
                                         </div>
                                     </div>
                                     <div className="text-center">
@@ -114,7 +158,6 @@ export default function SingleMovie() {
 
 
                     <div className="row g-3" >
-                        {console.log(singleMovie?.reviews, isClicked)}
                         {singleMovie?.reviews.map((element, index) => {
                             let updated = Date(element.updated_at)
                             return (
@@ -130,7 +173,7 @@ export default function SingleMovie() {
                                             <div className="card-title d-flex">User: <h5 className="px-2">{element.name}</h5></div>
 
                                         </div>
-                                        <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                        <p className="card-text">{element.text}</p>
 
                                     </div>
                                     <div className="card-footer text-body-secondary">
