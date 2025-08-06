@@ -1,18 +1,26 @@
 import { useState } from "react";
 import FilmRate from "./FilmRate";
+import { useMovie } from "../contexts/MainContext";
+import { BouncyArc } from 'ldrs/react'
+import 'ldrs/react/BouncyArc.css'
 
-export default function ReviewForm({ isClicked, singleMovie, setSingleMovie, movie_reviews_url }) {
+
+export default function ReviewForm({ movie_api_url, isClicked }) {
 
     const [newReview, setNewReview] = useState({
         name: '',
         vote: 1,
         text: ''
     })
+    const { singleMovie, loading, setLoading } = useMovie()
+    const movie_reviews_url = `${movie_api_url}/reviews`
+
 
 
     function handleSubmit(e) {
         e.preventDefault()
         console.log(newReview);
+        setLoading(true)
 
         fetch(movie_reviews_url, {
             method: 'POST',
@@ -38,6 +46,7 @@ export default function ReviewForm({ isClicked, singleMovie, setSingleMovie, mov
                     text: ''
                 })
             })
+            .finally(() => setLoading(false))
 
 
     }
@@ -112,6 +121,11 @@ export default function ReviewForm({ isClicked, singleMovie, setSingleMovie, mov
 
 
             <div className="row g-3" >
+                {loading && <BouncyArc
+                    size="70"
+                    speed="1.65"
+                    color="black"
+                />}
                 {singleMovie?.reviews.map((element, index) => {
                     let updated = Date(element.updated_at)
                     return (

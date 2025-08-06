@@ -1,24 +1,13 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useMovie } from "../contexts/MainContext"
+import { BouncyArc } from 'ldrs/react'
+import 'ldrs/react/BouncyArc.css'
 
 
 export default function Movies() {
+    const { movieData, loading } = useMovie()
 
-    const api_url = import.meta.env.VITE_API_URL
-    const [movieData, setMovieData] = useState(null)
-
-
-
-    useEffect(() => {
-        fetch(api_url)
-            .then(res => res.json())
-            .then(data => {
-                setMovieData(data)
-
-
-            })
-
-    }, [])
 
     return (
         <>
@@ -36,7 +25,12 @@ export default function Movies() {
             </div>
             <div className="container">
                 <div className="row g-3">
-                    {movieData?.map((element) => {
+                    {loading ? <BouncyArc
+                        size="70"
+                        speed="1.65"
+                        color="black"
+                    /> : movieData?.map((element) => {
+
                         return (
 
                             <div className="col-4" key={element.id}>
